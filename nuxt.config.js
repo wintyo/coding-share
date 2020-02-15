@@ -15,6 +15,12 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  router: {
+    mode: 'hash',
+  },
+  generate: {
+    dir: 'functions/public',
+  },
   /*
   ** Customize the progress-bar color
   */

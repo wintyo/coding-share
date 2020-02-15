@@ -8,11 +8,15 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "deploy": "firebase deploy",
+    "generate-and-deploy": "yarn generate && yarn deploy"
   },
   "dependencies": {
-    "nuxt": "^2.0.0",
-    "@nuxtjs/pwa": "^3.0.0-0"
+    "@nuxtjs/pwa": "^3.0.0-0",
+    "nuxt": "^2.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "firebase-tools": "^7.13.0"
+  }
 }

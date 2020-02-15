@@ -2,8 +2,7 @@ import * as functions from 'firebase-functions';
 import * as express from 'express';
 import { IpFilter } from 'express-ipfilter';
 import * as requestIp from 'request-ip';
-// import * as fs from 'fs';
-// import * as path from 'path';
+import * as path from 'path';
 
 // アクセス許可するIPの設定
 const PERMIT_IPS = (() => {
@@ -18,6 +17,7 @@ console.log('PERMIT_IPS:', PERMIT_IPS);
 
 const app = express();
 
+// IP制限
 app.use(IpFilter(PERMIT_IPS, {
   mode: 'allow',
   detectIp: (req) => {
@@ -27,8 +27,7 @@ app.use(IpFilter(PERMIT_IPS, {
   },
 }));
 
-app.get('/', (req, res) => {
-  res.send('ok');
-});
+// 静的配信
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 export const server = functions.https.onRequest(app);
