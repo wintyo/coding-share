@@ -34,9 +34,13 @@ div
         )
         input(type="submit", value="Penを新しく作る")
     .layout__item.-bottom
-      button.preview-reload(@click="onPreviewReloadButtonClick") 更新
-      .preview-list
-        template(v-for="codePen in $data.codePens")
+      button.preview-reload(@click="onPreviewReloadButtonClick") Penの更新
+      transition-group(
+        name="flip"
+        tag="div"
+        class="preview-list"
+      )
+        template(v-for="codePen in _sortedCodePens")
           .preview-list__item(:key="codePen.id")
             .preview
               .preview__info {{ codePen.email }}
@@ -60,6 +64,7 @@ div
 
 <script>
 import Vue from 'vue';
+import { sortBy } from 'lodash-es';
 
 import { database } from '~/plugins/firebase';
 
@@ -82,6 +87,12 @@ export default Vue.extend({
       const codePen = this.$data.codePens.find((codePen) => codePen.email === email);
       return codePen ? codePen : null;
     },
+    _sortedCodePens() {
+      return sortBy(
+        this.$data.codePens,
+        [(codePen) => (codePen.goodUsers || []).length]
+      ).reverse();
+    }
   },
   created() {
     this.themeRef.on('value', (snapshot) => {
@@ -175,12 +186,15 @@ export default Vue.extend({
 }
 
 .preview-list {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
 
   &__item {
     width: 350px + 20px;
     padding: 10px;
+    background-color: #fff;
+    transition: all 0.5s;
   }
 }
 
@@ -223,6 +237,36 @@ export default Vue.extend({
   &__iframe {
     width: 100%;
     height: 400px;
+  }
+}
+
+.flip {
+  // 要素が動くときにtransitionを設定する（.itemでtransitionを設定しているため-moveで書く必要はない）
+  // &-move {
+  //   transition: transform 0.5s;
+  // }
+
+  // 要素が入るときのアニメーション
+  &-enter {
+    &-active {
+      opacity: 0;
+      transform: translate3d(0, -30px, 0);
+    }
+    &-to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  // 要素が消える時のアニメーション
+  &-leave {
+    &-active {
+      position: absolute;
+    }
+    &-to {
+      opacity: 0;
+      transform: translate3d(0, -30px, 0);
+    }
   }
 }
 </style>
