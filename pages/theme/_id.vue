@@ -34,12 +34,14 @@ div
         )
         input(type="submit", value="Penを新しく作る")
     .layout__item.-bottom
+      button.preview-reload(@click="onPreviewReloadButtonClick") 更新
       .preview-list
         template(v-for="codePen in $data.codePens")
           .preview-list__item(:key="codePen.id")
             .preview
               .preview__info {{ codePen.email }}
               iframe.preview__iframe(
+                :key="$data.previewTimestamp.getTime()"
                 scrolling="no"
                 :src="`https://codepen.io/${codePen.accountName}/embed/${codePen.penId}`"
                 frameborder="no"
@@ -63,6 +65,7 @@ export default Vue.extend({
         url: '',
       },
       codePens: [],
+      previewTimestamp: new Date(),
     };
   },
   computed: {
@@ -117,6 +120,9 @@ export default Vue.extend({
 
       this.pensRef.push(data);
     },
+    onPreviewReloadButtonClick() {
+      this.$data.previewTimestamp = new Date();
+    }
   },
 });
 </script>
