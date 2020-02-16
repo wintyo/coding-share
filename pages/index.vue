@@ -19,6 +19,20 @@
     )
     br
     button(@click="onDeleteImageButtonClick") 削除
+    .
+      <iframe
+        height="500"
+        style="width: 100%;"
+        scrolling="no"
+        title="カレンダー"
+        src="https://codepen.io/wintyo/embed/JjoYQLX?height=500&theme-id=dark&default-tab=result"
+        frameborder="no"
+        allowtransparency="true"
+        allowfullscreen="true"
+      >
+        See the Pen <a href='https://codepen.io/wintyo/pen/JjoYQLX'>カレンダー</a> by wintyo
+        (<a href='https://codepen.io/wintyo'>@wintyo</a>) on <a href='https://codepen.io'>CodePen</a>.
+      </iframe>
 </template>
 
 <script>
