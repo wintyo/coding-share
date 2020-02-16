@@ -4,7 +4,7 @@ div
     .layout__item.-left
       .theme-info
         .theme-info__title {{ $data.theme.title }}
-        .thtme-info__detail {{ $data.theme.detail }}
+        .theme-info__detail {{ $data.theme.detail }}
     .layout__item.-right
       form(@submit="onCodePenSubmit")
         label.form-item
@@ -100,7 +100,7 @@ export default Vue.extend({
     });
     this.pensRef.on('value', (snapshot) => {
       const value = snapshot.val();
-      this.$data.codePens = Object.keys(value).map((key) => ({
+      this.$data.codePens = Object.keys(value || {}).map((key) => ({
         id: key,
         ...value[key],
       }));
@@ -174,6 +174,12 @@ export default Vue.extend({
       grid-row: 2;
       grid-column: 1 / span 2;
     }
+  }
+}
+
+.theme-info {
+  &__detail {
+    white-space: pre-wrap;
   }
 }
 
