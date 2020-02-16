@@ -7,8 +7,8 @@ export default ({ route, store, redirect }) => {
       return;
     }
 
-    if (route.path !== '/') {
-      redirect('/');
+    if (route.path !== '/login') {
+      redirect('/login');
     }
   });
 }

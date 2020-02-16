@@ -1,6 +1,7 @@
 <template lang="pug">
 .container
   div
+    nuxt-link(to="/login") ログイン
     Auth
     div {{ $store.state.auth }}
     input(v-model="$data.input", type="text")
@@ -36,7 +37,7 @@
 </template>
 
 <script>
-import { auth, authProviders, database, storage } from '~/plugins/firebase';
+import { database, storage } from '~/plugins/firebase';
 import * as firebaseui from 'firebaseui';
 import Logo from '~/components/Logo.vue'
 import Auth from '~/components/Auth.vue';
@@ -72,31 +73,6 @@ export default {
         console.log(url);
         this.$data.imageUrl = url;
       });
-  },
-  mounted() {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        return;
-      }
-      const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
-
-      const config = {
-        signInOptions: [
-          authProviders.Google,
-        ],
-        callbacks: {
-          // Nuxtのローカルサーバーで起こるCORSエラー対策
-          signInSuccessWithAuthResult: (authResult) => {
-            window.location.href = '/';
-            return false; // falseにするとsignInSuccessUrlにはリダイレクトしなくなる
-          },
-        },
-        signInSuccessUrl: '/',
-        signInFlow: 'popup',
-      };
-
-      ui.start('#auth-container', config);
-    });
   },
   methods: {
     onSubmit() {
