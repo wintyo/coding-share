@@ -7,10 +7,14 @@ div
 
 <script>
 import Vue from 'vue';
-import { auth, authProviders } from '~/plugins/firebase';
+import { auth, authProviders, database } from '~/plugins/firebase';
 import * as firebaseui from 'firebaseui';
 
 export default Vue.extend({
+  data() {
+    this.usersRef = database.ref('users');
+    return {};
+  },
   mounted() {
     const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
 
@@ -21,6 +25,17 @@ export default Vue.extend({
       callbacks: {
         // Nuxtのローカルサーバーで起こるCORSエラー対策
         signInSuccessWithAuthResult: (authResult) => {
+          const data = {
+            name: authResult.user.displayName,
+            photoUrl: authResult.user.photoURL,
+            email: authResult.user.email,
+          };
+          const user = this.$store.state.user.users.find((user) => user.email === data.email);
+          if (user) {
+            this.usersRef.child(user.id).set(data);
+            return;
+          }
+          this.usersRef.push(data);
           window.location.href = '/';
           return false; // falseにするとsignInSuccessUrlにはリダイレクトしなくなる
         },

@@ -7,11 +7,29 @@ div
 <script>
 import Vue from 'vue';
 
+import { database } from '~/plugins/firebase';
+
 import Header from '@/components/Header.vue';
 
 export default Vue.extend({
   components: {
     Header,
+  },
+  data() {
+    this.usersRef = database.ref('users');
+    return {};
+  },
+  created() {
+    this.usersRef.on('value', (snapshot) => {
+      const value = snapshot.val();
+      this.$store.commit('user/setUsers', Object.keys(value || {}).map((key) => ({
+        id: key,
+        ...value[key],
+      })));
+    });
+  },
+  beforeDestroy() {
+    this.usersRef.off('value');
   },
 });
 </script>

@@ -43,15 +43,22 @@ div
         template(v-for="codePen in _sortedCodePens")
           .preview-list__item(:key="codePen.id")
             .preview
-              .preview__info {{ codePen.email }}
-              .preview__good(
-                :class="{ '-active': isGoodChecked(codePen) }"
-                @click="onGoodButtonClick(codePen)"
-              )
-                | 👍 {{ (codePen.goodUsers || []).length }}
-                .preview__good__detail
-                  template(v-for="goodUser in codePen.goodUsers || []")
-                    div ・{{ goodUser }}
+              .preview__info
+                .preview__info__user
+                  .user
+                    .user__icon(
+                      :style="{ backgroundImage: `url(${getUserInfo(codePen.email).photoUrl})` }"
+                    )
+                    .user__name {{ getUserInfo(codePen.email).name }}
+                .preview__info__good
+                  .good(
+                    :class="{ '-active': isGoodChecked(codePen) }"
+                    @click="onGoodButtonClick(codePen)"
+                  )
+                    | 👍 {{ (codePen.goodUsers || []).length }}
+                    .good__detail
+                      template(v-for="goodUser in codePen.goodUsers || []")
+                        div ・{{ getUserInfo(goodUser).name }}
               iframe.preview__iframe(
                 :key="$data.previewTimestamp.getTime()"
                 scrolling="no"
@@ -115,6 +122,9 @@ export default Vue.extend({
     this.pensRef.off('value');
   },
   methods: {
+    getUserInfo(email) {
+      return this.$store.state.user.users.find((user) => user.email === email) || {};
+    },
     onCodePenSubmit(event) {
       event.preventDefault();
 
@@ -205,44 +215,68 @@ export default Vue.extend({
 }
 
 .preview {
-  &__good {
-    position: relative;
-    display: inline-flex;
+  &__info {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    padding: 2px 5px;
-    border-radius: 10px;
-    border: solid 1px #ccc;
-    background-color: #f5f5f5;
-    cursor: pointer;
-
-    &.-active {
-      color: #0aa;
-      font-weight: 600;
-      border-color: #0aa;
-      background-color: #cff;
-    }
-
-    &__detail {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      font-size: 13px;
-      padding: 5px;
-      color: #000;
-      background-color: #fff;
-      white-space: nowrap;
-    }
-
-    &:hover &__detail {
-      display: block;
-    }
   }
 
   &__iframe {
+    margin-top: 5px;
     width: 100%;
     height: 400px;
+  }
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__icon {
+    width: 30px;
+    height: 30px;
+    background: center / cover no-repeat;
+    border-radius: 50%;
+  }
+
+  &__name {
+    margin-left: 5px;
+  }
+}
+
+.good {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 5px;
+  border-radius: 10px;
+  border: solid 1px #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+
+  &.-active {
+    color: #0aa;
+    font-weight: 600;
+    border-color: #0aa;
+    background-color: #cff;
+  }
+
+  &__detail {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    font-size: 13px;
+    padding: 5px;
+    color: #000;
+    background-color: #fff;
+    white-space: nowrap;
+  }
+
+  &:hover &__detail {
+    display: block;
   }
 }
 
