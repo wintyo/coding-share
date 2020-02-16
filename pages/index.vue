@@ -1,6 +1,15 @@
 <template lang="pug">
 div
-  nuxt-link(to="/test") テストページ
+  nuxt-link(to="/theme/create") お題作成
+  br
+  br
+  p お題リスト
+  ul.theme-list
+    template(v-for="theme in $data.themes")
+      li.theme-list__item(@click="onThemeClick(theme.id)")
+        .theme-list__item__title {{ theme.title }}
+        .theme-list__item__detail {{ theme.detail }}
+        .theme-list__item__author Created by {{ theme.author }}
 </template>
 
 <script>
@@ -10,48 +19,55 @@ export default {
   components: {
   },
   data() {
+    this.themesRef = database.ref('themes');
     return {
-      input: '',
-      list: [],
-      imageUrl: '',
+      themes: [],
     };
   },
   created() {
+    this.themesRef.on('value', (snapshot) => {
+      const value = snapshot.val();
+      this.$data.themes = Object.keys(value).map((key) => ({
+        id: key,
+        ...value[key],
+      }));
+    });
+  },
+  beforeDestroy() {
+    this.themesRef.off('value');
   },
   methods: {
+    onThemeClick(themeId) {
+      this.$router.push(`/theme/${themeId}`);
+    },
   },
 }
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+<style lang="scss" scoped>
+.theme-list {
+  padding: 0 10px;
+  list-style: none;
 
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
+  &__item {
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 5px rgba(#000, 0.05);
+    background-color: #fff;
+    transition: box-shadow 0.5s;
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
+    &:hover {
+      cursor: pointer;
+      box-shadow: 0 0 10px 5px rgba(#000, 0.1);
+    }
 
-.links {
-  padding-top: 15px;
+    & + & {
+      margin-top: 10px;
+    }
+
+    &__detail {
+      white-space: pre-wrap;
+    }
+  }
 }
 </style>
