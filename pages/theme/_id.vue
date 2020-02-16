@@ -15,6 +15,24 @@ div
             placeholder="https://codepen.io/wintyo/pen/oNXxBwG"
           )
         button(type="submit") {{ _myPen ? '更新' : '登録' }}
+      br
+      form(
+        action="https://codepen.io/pen/define"
+        method="POST"
+        target="_blank"
+      )
+        //- typescriptは型チェックが無いので一旦noneで
+        input(
+          type="hidden"
+          name="data"
+          :value="JSON.stringify({\
+            title: $data.theme.title,\
+            html_pre_processor: 'pug',\
+            css_pre_processor: 'scss',\
+            js_pre_processor: 'none',\
+          })"
+        )
+        input(type="submit", value="Penを新しく作る")
     .layout__item.-bottom
       .preview-list
         template(v-for="codePen in $data.codePens")
