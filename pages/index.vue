@@ -3,10 +3,17 @@
   div
     Auth
     div {{ $store.state.auth }}
+    input(v-model="$data.input", type="text")
+    button(@click="onSubmit") 送信
+    div
+      template(v-for="item in $data.list")
+        div
+          | {{ item.value }}
+          button(@click="deleteItem(item.key)") 削除
 </template>
 
 <script>
-import { auth, authProviders } from '~/plugins/firebase';
+import { auth, authProviders, database } from '~/plugins/firebase';
 import * as firebaseui from 'firebaseui';
 import Logo from '~/components/Logo.vue'
 import Auth from '~/components/Auth.vue';
@@ -14,6 +21,26 @@ import Auth from '~/components/Auth.vue';
 export default {
   components: {
     Auth,
+  },
+  data() {
+    return {
+      input: '',
+      list: [],
+    };
+  },
+  created() {
+    const testRef = database.ref().child('test');
+    testRef.on('value', (snapshot) => {
+      console.log(snapshot);
+      console.log(snapshot.val());
+      const value = snapshot.val();
+      this.$data.list = Object.keys(value).map((key) => ({
+        key,
+        value: value[key],
+      }));
+      console.log(this.$data.list);
+    });
+    // testRef.push('hoge');
   },
   mounted() {
     auth.onAuthStateChanged((user) => {
@@ -39,7 +66,18 @@ export default {
 
       ui.start('#auth-container', config);
     });
-  }
+  },
+  methods: {
+    onSubmit() {
+      const testRef = database.ref().child('test');
+      testRef.push(this.$data.input);
+    },
+    deleteItem(key) {
+      // database.ref(`test/${key}`).remove();
+      const testRef = database.ref().child('test');
+      testRef.child(key).remove();
+    }
+  },
 }
 </script>
 
