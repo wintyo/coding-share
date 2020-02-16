@@ -74,11 +74,9 @@ export default Vue.extend({
   },
   created() {
     this.themeRef.on('value', (snapshot) => {
-      console.log(snapshot.val());
       this.$data.theme = snapshot.val();
     });
     this.pensRef.on('value', (snapshot) => {
-      console.log(snapshot.val());
       const value = snapshot.val();
       this.$data.codePens = Object.keys(value).map((key) => ({
         id: key,
