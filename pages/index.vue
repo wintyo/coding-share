@@ -1,7 +1,5 @@
 <template lang="pug">
 div
-  nuxt-link(to="/login") ログイン
-  br
   nuxt-link(to="/test") テストページ
 </template>
 
