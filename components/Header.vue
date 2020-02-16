@@ -1,16 +1,15 @@
 <template lang="pug">
-div
-  .header
-    .header__link
-      nuxt-link(to="/", class="link") TOP
-    .header__user
-      template(v-if="$store.state.auth.user")
-        .user
-          .user__icon(
-            :style="{ backgroundImage: `url(${$store.state.auth.user.photoUrl})` }"
-          )
-          .user__hover
-            button(@click="onLogoutButtonClick") ログアウト
+.header
+  .header__link
+    nuxt-link(to="/", class="link") TOP
+  .header__user
+    template(v-if="$store.state.auth.user")
+      .user
+        .user__icon(
+          :style="{ backgroundImage: `url(${$store.state.auth.user.photoUrl})` }"
+        )
+        .user__hover
+          button(@click="onLogoutButtonClick") ログアウト
 </template>
 
 <script>
@@ -34,6 +33,7 @@ export default Vue.extend({
   justify-content: space-between;
   padding: 10px 20px;
   border-bottom: solid 1px #ccc;
+  background-color: #fff;
 }
 
 .link {
