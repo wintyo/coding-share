@@ -40,6 +40,14 @@ div
           .preview-list__item(:key="codePen.id")
             .preview
               .preview__info {{ codePen.email }}
+              .preview__good(
+                :class="{ '-active': isGoodChecked(codePen) }"
+                @click="onGoodButtonClick(codePen)"
+              )
+                | 👍 {{ (codePen.goodUsers || []).length }}
+                .preview__good__detail
+                  template(v-for="goodUser in codePen.goodUsers || []")
+                    div ・{{ goodUser }}
               iframe.preview__iframe(
                 :key="$data.previewTimestamp.getTime()"
                 scrolling="no"
@@ -111,6 +119,7 @@ export default Vue.extend({
         email,
         accountName,
         penId,
+        goodUsers: this._myPen ? (this._myPen.goodUsers || []) : [],
       };
 
       if (this._myPen) {
@@ -119,6 +128,19 @@ export default Vue.extend({
       }
 
       this.pensRef.push(data);
+    },
+    isGoodChecked(codePen) {
+      const goodUsers = codePen.goodUsers || [];
+      const email = this.$store.state.auth.user ? this.$store.state.auth.user.email : '';
+      return !!goodUsers.find((goodUser) => goodUser === email);
+    },
+    onGoodButtonClick(codePen) {
+      const email = this.$store.state.auth.user.email;
+      const goodUsers = (codePen.goodUsers || []);
+      const newGoodUsers = (codePen.goodUsers || []).find((goodUser) => goodUser === email)
+        ? goodUsers.filter((goodUser) => goodUser !== email)
+        : goodUsers.concat(email);
+      this.pensRef.child(`${codePen.id}/goodUsers`).set(newGoodUsers);
     },
     onPreviewReloadButtonClick() {
       this.$data.previewTimestamp = new Date();
@@ -163,6 +185,41 @@ export default Vue.extend({
 }
 
 .preview {
+  &__good {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 5px;
+    border-radius: 10px;
+    border: solid 1px #ccc;
+    background-color: #f5f5f5;
+    cursor: pointer;
+
+    &.-active {
+      color: #0aa;
+      font-weight: 600;
+      border-color: #0aa;
+      background-color: #cff;
+    }
+
+    &__detail {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      font-size: 13px;
+      padding: 5px;
+      color: #000;
+      background-color: #fff;
+      white-space: nowrap;
+    }
+
+    &:hover &__detail {
+      display: block;
+    }
+  }
+
   &__iframe {
     width: 100%;
     height: 400px;
