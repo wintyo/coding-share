@@ -10,10 +10,19 @@
         div
           | {{ item.value }}
           button(@click="deleteItem(item.key)") 削除
+    img(:src="$data.imageUrl")
+    br
+    input(
+      type="file"
+      value="アップロード"
+      @change="onUpload"
+    )
+    br
+    button(@click="onDeleteImageButtonClick") 削除
 </template>
 
 <script>
-import { auth, authProviders, database } from '~/plugins/firebase';
+import { auth, authProviders, database, storage } from '~/plugins/firebase';
 import * as firebaseui from 'firebaseui';
 import Logo from '~/components/Logo.vue'
 import Auth from '~/components/Auth.vue';
@@ -26,6 +35,7 @@ export default {
     return {
       input: '',
       list: [],
+      imageUrl: '',
     };
   },
   created() {
@@ -41,6 +51,13 @@ export default {
       console.log(this.$data.list);
     });
     // testRef.push('hoge');
+
+    const imageRef = storage.ref().child('types.png');
+    imageRef.getDownloadURL()
+      .then((url) => {
+        console.log(url);
+        this.$data.imageUrl = url;
+      });
   },
   mounted() {
     auth.onAuthStateChanged((user) => {
@@ -76,7 +93,27 @@ export default {
       // database.ref(`test/${key}`).remove();
       const testRef = database.ref().child('test');
       testRef.child(key).remove();
-    }
+    },
+    onUpload(event) {
+      const uploadRef = storage.ref().child('hoge/upload.png');
+      const file = event.target.files[0];
+
+      uploadRef.put(file).then((snapshot) => {
+        console.log('snapshot', snapshot);
+
+        uploadRef.getDownloadURL().then((url) => {
+          this.$data.imageUrl = url;
+        });
+      });
+    },
+    onDeleteImageButtonClick() {
+      const uploadRef = storage.ref().child('hoge/upload.png');
+      uploadRef.delete()
+        .then(() => {
+          console.log('success delete');
+          // this.$data.imageUrl = '';
+        });
+    },
   },
 }
 </script>
