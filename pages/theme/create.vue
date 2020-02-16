@@ -33,7 +33,10 @@ export default Vue.extend({
         title: this.$data.title,
         detail: this.$data.detail,
         author: this.$store.state.auth.user.name,
-      });
+      })
+        .then(() => {
+          this.$router.push('/');
+        });
     },
   },
 });

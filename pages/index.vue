@@ -5,7 +5,7 @@ div
   br
   p お題リスト
   ul.theme-list
-    template(v-for="theme in $data.themes")
+    template(v-for="theme in $data.themes.slice().reverse()")
       li.theme-list__item(@click="onThemeClick(theme.id)")
         .theme-list__item__title {{ theme.title }}
         .theme-list__item__detail {{ theme.detail }}
