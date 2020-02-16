@@ -1,39 +1,44 @@
-<template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        coding-share
-      </h1>
-      <h2 class="subtitle">
-        My awe-inspiring Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
-  </div>
+<template lang="pug">
+.container
+  div
+    Auth
+    div {{ $store.state.auth }}
 </template>
 
 <script>
+import { auth, authProviders } from '~/plugins/firebase';
+import * as firebaseui from 'firebaseui';
 import Logo from '~/components/Logo.vue'
+import Auth from '~/components/Auth.vue';
 
 export default {
   components: {
-    Logo
+    Auth,
+  },
+  mounted() {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        return;
+      }
+      const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
+
+      const config = {
+        signInOptions: [
+          authProviders.Google,
+        ],
+        callbacks: {
+          // Nuxtのローカルサーバーで起こるCORSエラー対策
+          signInSuccessWithAuthResult: (authResult) => {
+            window.location.href = '/';
+            return false; // falseにするとsignInSuccessUrlにはリダイレクトしなくなる
+          },
+        },
+        signInSuccessUrl: '/',
+        signInFlow: 'popup',
+      };
+
+      ui.start('#auth-container', config);
+    });
   }
 }
 </script>

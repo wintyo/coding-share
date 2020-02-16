@@ -17,6 +17,7 @@ export default {
   },
   router: {
     mode: 'hash',
+    middleware: ['authenticated'],
   },
   generate: {
     dir: 'functions/public',
@@ -29,6 +30,7 @@ export default {
   ** Global CSS
   */
   css: [
+    'firebaseui/dist/firebaseui.css',
   ],
   /*
   ** Plugins to load before mounting the App
